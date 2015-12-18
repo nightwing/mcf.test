@@ -1,0 +1,15 @@
+<pre id="x"></pre>
+<script>
+    define = function(f) {
+        var x = document.getElementById("x")
+        x.textContent =  src + " success!\n\n" + script.src + "\n\n" + f;
+        x.style.background = "lightgreen"
+    }
+    var script = document.createElement("script")
+    var src = location.hash.substr(1) + ".js"
+    script.src = src
+    document.body.appendChild(script)
+    var x = document.getElementById("x")
+    x.textContent =  src + " waiting!\n\n" + script.src + "\n\n";
+    x.style.background = "orange"
+</script>
