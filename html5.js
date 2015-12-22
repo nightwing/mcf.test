@@ -42,105 +42,25 @@ define(function(require, exports, module) {
         /***** Methods *****/
         
         function clear(){
-            if (nativeObject)
-                nativeObject.clearData();
-            else {
-                var data = get("");
-                if (data !== false)
-                    set("", "", data.types);
-            }
+            
         }
         
-        function set(type, data, list) {
-            if (notSupported(type))
-                return;
-                
-            type = convertType(type);
+        function set(type, data, list) {}
             
-            if (nativeObject) {
-                nativeObject.setData(type, data);
-                return true;
-            }
-            
-            var setData = function(e) {
-                if (list) {
-                    list.forEach(function(type) {
-                        e[cb + d].setData(type, data);
-                    });
-                }
-                e[cb + d].setData(type, data);
-                
-                e.preventDefault();
-                e.stopPropagation();
-            };
-            document.addEventListener("copy", setData, true);
-            
-            // @todo test if this is sync
-            requested = true;
-            var result = exC("copy");
-            requested = false;
-            
-            document.removeEventListener("copy", setData, true);
-            
-            return !!result;
-        }
-            
-        function get(type, full) {
-            if (notSupported(type))
-                return;
-                
-            type = convertType(type);
-            
-            if (!full && nativeObject)
-                return nativeObject.getData(type);
-            
-            var data;
-            var getData = function(e) {
-                data = full
-                    ? e[cb + d]
-                    : e[cb + d].getData(type);
-                e.preventDefault();
-                e.stopPropagation();
-            };
-            document.addEventListener("paste", getData, true);
-            
-            // @todo test if this is sync
-            requested = true;
-            var result = exC("paste");
-            requested = false;
-            
-            document.removeEventListener("paste", getData, true);
-            
-            if (!result)
-                return false;
-            
-            return data;
-        }
+        function get(type, full) {}
         
-        function exC(commandName) {
-            var a = "exec"; var b = "Command"
-            try {
-                return document[a + b](commandName, null, null);
-            } catch (e) {
-                return false; // firefox throws
-            }
-        }
+        function execCommand(commandName) {}
         
         function notSupported(type) {
             return !/text($|\/)/.test(type);
         }
         
-        function convertType(type) {
-            return document.all ? "Text" : type;
-        }
+        function convertType(type) {}
         
-        function wrap(obj) {
-            nativeObject = obj;
-        }
-        var cb = "clipb"
-        var d = "oardData"
-        function unwrap(){
-            nativeObject = window[cb + d]; // for ie and firefox addon
+        function wrap(obj) {}
+        
+        function unwrap(x){
+            return x.clipboardData
         }
         
         /***** Lifecycle *****/

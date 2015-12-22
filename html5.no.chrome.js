@@ -35,109 +35,33 @@ define(function(require, exports, module) {
         function load(){
             if (loaded) return false;
             loaded = true;
+            
+            // Chrome Specific
         }
         
         /***** Methods *****/
         
         function clear(){
-            if (nativeObject)
-                nativeObject.clearData();
-            else {
-                var data = get("");
-                if (data !== false)
-                    set("", "", data.types);
-            }
+            
         }
         
-        function set(type, data, list) {
-            if (notSupported(type))
-                return;
-                
-            type = convertType(type);
+        function set(type, data, list) {}
             
-            if (nativeObject) {
-                nativeObject.setData(type, data);
-                return true;
-            }
-            
-            var setData = function(e) {
-                if (list) {
-                    list.forEach(function(type) {
-                        e.clipboardData.setData(type, data);
-                    });
-                }
-                e.clipboardData.setData(type, data);
-                
-                e.preventDefault();
-                e.stopPropagation();
-            };
-            document.addEventListener("copy", setData, true);
-            
-            // @todo test if this is sync
-            requested = true;
-            var result = execCommand("copy");
-            requested = false;
-            
-            document.removeEventListener("copy", setData, true);
-            
-            return !!result;
-        }
-            
-        function get(type, full) {
-            if (notSupported(type))
-                return;
-                
-            type = convertType(type);
-            
-            if (!full && nativeObject)
-                return nativeObject.getData(type);
-            
-            var data;
-            var getData = function(e) {
-                data = full
-                    ? e.clipboardData
-                    : e.clipboardData.getData(type);
-                e.preventDefault();
-                e.stopPropagation();
-            };
-            document.addEventListener("paste", getData, true);
-            
-            // @todo test if this is sync
-            requested = true;
-            var result = execCommand("paste");
-            requested = false;
-            
-            document.removeEventListener("paste", getData, true);
-            
-            if (!result)
-                return false;
-            
-            return data;
-        }
+        function get(type, full) {}
         
         function execCommand(commandName) {
-            try {
-                return document.execCommand(commandName, null, null);
-            } catch (e) {
-                return false; // firefox throws
-            }
+            document.execCommand(commandName);
         }
         
         function notSupported(type) {
             return !/text($|\/)/.test(type);
         }
         
-        function convertType(type) {
-            return document.all ? "Text" : type;
-        }
+        function convertType(type) {}
         
-        function wrap(obj) {
-            nativeObject = obj;
-        }
+        function wrap(obj) {}
         
-        function unwrap(){
-            
-        }
+        function unwrap(x){}
         
         /***** Lifecycle *****/
         

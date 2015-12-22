@@ -23,39 +23,17 @@ define(function(require, exports, module) {
 
     function main(options, imports, register) {
         var Plugin = imports.Plugin;
-        var showError = imports["dialog.error"].show;
         
         /***** Initialization *****/
         
         var plugin = new Plugin("Ajax.org", main.consumes);
 
-        var requested, nativeObject;
+        var nativeObject;
         
         var loaded = false;
         function load(){
             if (loaded) return false;
             loaded = true;
-            
-            // Chrome Specific
-            if (window.chrome && window.chrome.permissions) {
-                var chrome = window.chrome;
-                var permissions = {
-                    permissions: ["clipboardRead", "clipboardWrite"],
-                    origins: [location.origin]
-                };
-                
-                chrome.permissions.contains(permissions, function(allowed) {
-                    if (!allowed) {
-                        chrome.permissions.request(permissions, function(result) {
-                            if (result) {
-                                showError("The browser has granted copy "
-                                    + "and paste permissions. Restart the "
-                                    + "browser to enable these permissions");
-                            }
-                        });
-                    }
-                });
-            }
         }
         
         /***** Methods *****/
@@ -94,10 +72,7 @@ define(function(require, exports, module) {
             };
             document.addEventListener("copy", setData, true);
             
-            // @todo test if this is sync
-            requested = true;
             var result = execCommand("copy");
-            requested = false;
             
             document.removeEventListener("copy", setData, true);
             
@@ -123,10 +98,7 @@ define(function(require, exports, module) {
             };
             document.addEventListener("paste", getData, true);
             
-            // @todo test if this is sync
-            requested = true;
             var result = execCommand("paste");
-            requested = false;
             
             document.removeEventListener("paste", getData, true);
             
@@ -149,14 +121,14 @@ define(function(require, exports, module) {
         }
         
         function convertType(type) {
-            return document.all ? "Text" : type;
         }
         
         function wrap(obj) {
             nativeObject = obj;
         }
         
-        function unwrap(){
+        function unwrap(e){
+            nativeObject = e.clipboardData; // for ie and firefox addon
         }
         
         /***** Lifecycle *****/
@@ -172,6 +144,7 @@ define(function(require, exports, module) {
         });
         plugin.on("unload", function(){
             loaded = false;
+            nativeObject = null;
         });
         
         /***** Register and define API *****/
@@ -222,4 +195,4 @@ define(function(require, exports, module) {
             "clipboard.provider": plugin
         });
     }
-})
+});

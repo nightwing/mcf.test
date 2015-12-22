@@ -59,7 +59,9 @@ define(function(require, exports, module) {
         
         function wrap(obj) {}
         
-        function unwrap(){}
+        function unwrap(){
+            return window.clipboardData
+        }
         
         /***** Lifecycle *****/
         
