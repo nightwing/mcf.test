@@ -157,7 +157,6 @@ define(function(require, exports, module) {
         }
         
         function unwrap(){
-            nativeObject = window.clipboardData; // for ie and firefox addon
         }
         
         /***** Lifecycle *****/

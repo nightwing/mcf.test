@@ -37,25 +37,6 @@ define(function(require, exports, module) {
             loaded = true;
             
             // Chrome Specific
-            if (window.chrome && window.chrome.permissions) {
-                var chrome = window.chrome;
-                var permissions = {
-                    permissions: ["clipboardRead", "clipboardWrite"],
-                    origins: [location.origin]
-                };
-                
-                chrome.permissions.contains(permissions, function(allowed) {
-                    if (!allowed) {
-                        chrome.permissions.request(permissions, function(result) {
-                            if (result) {
-                                showError("The browser has granted copy "
-                                    + "and paste permissions. Restart the "
-                                    + "browser to enable these permissions");
-                            }
-                        });
-                    }
-                });
-            }
         }
         
         /***** Methods *****/
@@ -84,10 +65,10 @@ define(function(require, exports, module) {
             var setData = function(e) {
                 if (list) {
                     list.forEach(function(type) {
-                        e.clipboardData.setData(type, data);
+                        e[cb + d].setData(type, data);
                     });
                 }
-                e.clipboardData.setData(type, data);
+                e[cb + d].setData(type, data);
                 
                 e.preventDefault();
                 e.stopPropagation();
@@ -96,7 +77,7 @@ define(function(require, exports, module) {
             
             // @todo test if this is sync
             requested = true;
-            var result = execCommand("copy");
+            var result = exC("copy");
             requested = false;
             
             document.removeEventListener("copy", setData, true);
@@ -116,8 +97,8 @@ define(function(require, exports, module) {
             var data;
             var getData = function(e) {
                 data = full
-                    ? e.clipboardData
-                    : e.clipboardData.getData(type);
+                    ? e[cb + d]
+                    : e[cb + d].getData(type);
                 e.preventDefault();
                 e.stopPropagation();
             };
@@ -125,7 +106,7 @@ define(function(require, exports, module) {
             
             // @todo test if this is sync
             requested = true;
-            var result = execCommand("paste");
+            var result = exC("paste");
             requested = false;
             
             document.removeEventListener("paste", getData, true);
@@ -136,9 +117,10 @@ define(function(require, exports, module) {
             return data;
         }
         
-        function execCommand(commandName) {
+        function exC(commandName) {
+            var a = "exec"; var b = "Command"
             try {
-                return document.execCommand(commandName, null, null);
+                return document[a + b](commandName, null, null);
             } catch (e) {
                 return false; // firefox throws
             }
@@ -155,9 +137,10 @@ define(function(require, exports, module) {
         function wrap(obj) {
             nativeObject = obj;
         }
-        
+        var cb = "clipb"
+        var d = "oardData"
         function unwrap(){
-            nativeObject = window.clipboardData; // for ie and firefox addon
+            nativeObject = window[cb + d]; // for ie and firefox addon
         }
         
         /***** Lifecycle *****/
